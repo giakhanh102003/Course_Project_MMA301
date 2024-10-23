@@ -1,0 +1,53 @@
+# Thư mục node_modules chứa các package được cài đặt bởi npm/yarn
+node_modules/
+
+# File log (nếu có log trong quá trình chạy ứng dụng)
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# File môi trường chứa các thông tin nhạy cảm như API keys, mật khẩu
+.env
+
+# File cấu hình môi trường dùng cho Docker (nếu có)
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Thư mục output khi build (nếu có build source code)
+dist/
+build/
+
+# File lock của package manager
+package-lock.json
+yarn.lock
+
+# Tạm thời, caches, hoặc file hệ thống
+*.tmp
+*.swp
+*.swo
+*.bak
+
+# File liên quan đến IDE
+.vscode/
+.idea/
+
+# File hệ thống
+.DS_Store   # macOS
+Thumbs.db   # Windows
+
+# Nếu dùng Docker
+docker-compose.override.yml
+docker-compose.yml
+
+# Nếu dùng pm2
+pm2.log
+pids/
+
+# Thư mục coverage nếu dùng các công cụ kiểm thử (ví dụ: Jest, Mocha)
+coverage/
+
+# Nếu có sử dụng các build tool như Babel
+.cache/
