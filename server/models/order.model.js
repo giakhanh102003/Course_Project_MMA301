@@ -26,7 +26,7 @@ const orderSchema = new mongoose.Schema({
         required: [true, "Please add a total"],
     },
     shippingAddress: {
-        type: String,
+        type: Object,
         required: [true, "Please add an address"],
     },
     status: {
