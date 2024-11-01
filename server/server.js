@@ -26,7 +26,7 @@ app.get("/", async (req, res, next) => {
 app.use("/user", userRouter);
 app.use("/category", categoryRouter);
 app.use("/product", productRouter);
-app.use("/cart", productRouter);
+app.use("/cart", cartRouter);
 
 // them middleware xu ly loi tren : router , Controller , Model
 app.use(async (req, res, next) => {

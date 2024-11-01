@@ -31,10 +31,13 @@ const productSchema = new mongoose.Schema(
         required: [true, "Please add a size"],
       },
     ],
-    color: {
-      type: String,
-      required: [true, "Please add a color"],
-    },
+    color: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Color",
+        required: [true, "Please add a color"],
+      },
+    ],
     unitInStock: {
       type: Number,
       required: [true, "Please add a unit in stock"],

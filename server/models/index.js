@@ -8,6 +8,7 @@ const User = require("./user.model");
 // khai bao doi tuong co so du lieu
 const dotenv = require("dotenv");   
 const Size = require("./size.model");
+const Color = require("./color.model");
 dotenv.config();
 const DB ={};
 
@@ -18,6 +19,7 @@ DB.Carts = Cart;
 DB.Orders = Order;
 DB.Users = User;
 DB.Sizes = Size
+DB.Colos = Color
 DB.connectDB =  async() => {
     try{
         await mongoose.connect(process.env.MONGODB_URI)
