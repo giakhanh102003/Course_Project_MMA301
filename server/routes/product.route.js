@@ -9,4 +9,7 @@ productRouter.post("/api/create", async (req, res, next) => {
 productRouter.get("/api/list-all", async (req, res, next) => {
     ProductController.getProducts(req, res, next);
 });
+productRouter.get("/api/getProduct/:id", async (req, res, next) => {
+    ProductController.getProductById(req, res, next);
+})
 module.exports = productRouter;

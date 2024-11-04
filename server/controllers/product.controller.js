@@ -18,8 +18,30 @@ async function createProduct(req, res, next) {
         next(error);
     }
 }
+async function getProductById(req, res, next) {
+    try {
+        const product = await Product.findById(req.params.id)
+        .populate("category", "name")
+        .populate("size", "size")
+        .populate("color", "colorName");
+        res.status(200).json({message: "Get product success", product: {
+            name: product.name,
+            productLine: product.productLine,
+            category: product.category.name,
+            price: product.price,
+            description: product.description,
+            size: product.size,
+            color: product.color,
+            unitInStock: product.unitInStock,
+            image: product.image
+        }});
+    } catch (error) {
+        next(error);
+    }
+}
 const ProductController = {
     getProducts,    
-    createProduct
+    createProduct,
+    getProductById
 };
 module.exports = ProductController
