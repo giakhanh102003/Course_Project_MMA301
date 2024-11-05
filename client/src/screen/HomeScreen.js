@@ -1,17 +1,19 @@
-import React, { useEffect, useState } from "react"; 
-import { View, Text, Image, FlatList,Button, StyleSheet, ActivityIndicator } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, Image, FlatList, Button, StyleSheet, ActivityIndicator } from "react-native";
 import { getProducts } from "../service/api";
+import Headers from "../component/Header";
 
 const HomeScreen = ({ navigation }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filteredProducts, setFilteredProducts] = useState([]); // Thêm state để lưu sản phẩm đã lọc
 
   // Hàm để lấy danh sách sản phẩm từ API
   const fetchProducts = async () => {
     try {
       const data = await getProducts();
       setProducts(data.products); // Giả sử data trả về có định dạng { products: [...] }
-      console.log(data.products);
+      setFilteredProducts(data.products); // Đặt sản phẩm đã lọc ban đầu là tất cả sản phẩm
     } catch (error) {
       console.error("Error fetching products:", error);
     } finally {
@@ -22,18 +24,28 @@ const HomeScreen = ({ navigation }) => {
   useEffect(() => {
     fetchProducts();
   }, []);
-  if(loading){
-    return(
-      <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
+
+  const handleSearch = (query) => {
+    const filtered = products.filter(product => 
+      product.name.toLowerCase().includes(query.toLowerCase())
+    );
+    setFilteredProducts(filtered); // Cập nhật danh sách sản phẩm đã lọc
+  };
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <Text>Loading...</Text>
       </View>
-    )
+    );
   }
+
   return (
     <View style={styles.container}>
+      <Headers onSearch={handleSearch} />
       <Text style={styles.header}>List Product</Text>
       <FlatList
-        data={products}
+        data={filteredProducts} // Hiển thị sản phẩm đã lọc
         keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
           <View style={styles.productContainer}>
@@ -43,8 +55,11 @@ const HomeScreen = ({ navigation }) => {
             <Text style={styles.price}>${item.price}</Text>
             <Text style={styles.description}>{item.description}</Text>
             <Text style={styles.unitInStock}>Stock: {item.unitInStock}</Text>
-            <Button style={styles.button}
+            <Button
+              style={styles.button}
               title="View Details"
+              color="#f97316"
+              borderRadius={10}
               onPress={() => navigation.navigate("ProductDetail", { productId: item._id })}
             />
           </View>
@@ -55,15 +70,13 @@ const HomeScreen = ({ navigation }) => {
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
     backgroundColor: "#fff",
   },
-  // button: {
-  //   backgroundColor: "#f97316",
-  // },
   header: {
     fontSize: 20,
     fontWeight: "bold",
@@ -74,7 +87,7 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   productContainer: {
-    flex: 1, // Để các phần tử có chiều rộng đều nhau
+    flex: 1,
     margin: 5,
     padding: 10,
     backgroundColor: "#f8f8f8",
@@ -83,7 +96,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   image: {
-    width: 80, // Đảm bảo hình ảnh không quá lớn
+    width: 80,
     height: 80,
     borderRadius: 8,
     marginBottom: 10,

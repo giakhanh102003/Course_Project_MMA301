@@ -83,45 +83,40 @@ async function getCart(req, res, next) {
   }
 }
 async function deleteItemInCart(req, res, next) {
-    try {
-        const { userId } = req.params;
-        const { productId, size, color } = req.body;
+  try {
+      const { userId } = req.params;
+      const { productId, size, color } = req.query;
 
-        // Tìm giỏ hàng của người dùng
-        let cart = await Cart.findOne({ user: userId });
-        if (!cart) {
-            return res.status(404).json({ message: "Cart not found" });
-        }
-        const existingItem = cart.items.find(
-            (item) =>
-                item.product.toString() === productId &&
+      // Tìm giỏ hàng của người dùng
+      let cart = await Cart.findOne({ user: userId });
+      if (!cart) {
+          return res.status(404).json({ message: "Cart not found" });
+      }
+
+      const existingItem = cart.items.find(
+          (item) =>
+              item.product.toString() === productId &&
+              item.size.toString() === size &&
+              item.color.toString() === color
+      );
+
+      if (!existingItem) {
+          return res.status(404).json({ message: "Item not found in cart" });
+      }
+
+      // Xóa item khỏi giỏ hàng
+      cart.items = cart.items.filter(
+          (item) =>
+              !(item.product.toString() === productId &&
                 item.size.toString() === size &&
-                item.color.toString() === color
-        );
+                item.color.toString() === color)
+      );
 
-        if (!existingItem) {
-            return res.status(404).json({ message: "Item not found in cart" });
-        }
-
-        // Xóa item khỏi giỏ hàng bằng phương thức pull
-        cart.items = cart.items.filter(
-            (item) =>
-                !(item.product.toString() === productId &&
-                  item.size.toString() === size &&
-                  item.color.toString() === color)
-        );
-
-        await cart.save();
-
-        // Populate và trả về giỏ hàng
-        await cart.populate("items.product", "name"); // Populate sản phẩm
-        await cart.populate("items.size", "size"); // Populate kích thước
-        await cart.populate("items.color", "colorName"); // Populate màu
-
-        res.status(200).json({ message: "Item removed from cart", cart });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+      await cart.save();
+      res.status(200).json(cart);
+  } catch (error) {
+      res.status(500).json({ message: error.message });
+  }
 }
 const CartController = {
   addItemToCart,

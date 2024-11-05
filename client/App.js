@@ -6,6 +6,8 @@ import LoginScreen from "./src/screen/LoginScreen";
 import HomeScreen from "./src/screen/HomeScreen";
 import CartScreen from "./src/screen/CartScreen";
 import ProductDetailScreen from "./src/screen/ProductDetailScreen";
+import SignUpScreen from "./src/screen/SignUpScreen";
+import UpdateProfileScreen from "./src/screen/UpdateProfileScreen"; 
 const Stack = createStackNavigator();
 
 export default function App() {
@@ -13,9 +15,11 @@ export default function App() {
         <NavigationContainer>
             <Stack.Navigator initialRouteName="Login">
                 <Stack.Screen name="Login" component={LoginScreen}  />
+                <Stack.Screen name="SignUp" component={SignUpScreen}  />
                 <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: true }} />
                 <Stack.Screen name="ProductDetail" component={ProductDetailScreen}  />
                 <Stack.Screen name="Cart" component={CartScreen}  />
+                <Stack.Screen name="UpdateProfile" component={UpdateProfileScreen}  />
             </Stack.Navigator>
             <Toast ref={(ref) => Toast.setRef(ref)} />
         </NavigationContainer>

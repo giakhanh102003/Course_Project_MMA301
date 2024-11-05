@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ActivityIndicator, FlatList, Image } from "react-native";
-import { getCart } from "../service/api"; // Import hàm getCart từ dịch vụ API
+import { View, Text, StyleSheet, ActivityIndicator, FlatList, Image, TouchableOpacity } from "react-native";
+import { getCart, deleteItemInCart } from "../service/api"; // Import hàm getCart và deleteItemInCart từ dịch vụ API
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Icon from "react-native-vector-icons/MaterialIcons"; // Sử dụng icon thư viện
 
 const CartScreen = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -40,6 +41,20 @@ const CartScreen = () => {
     fetchCart();
   }, [userId]);
 
+  const handleDeleteItem = async (productId, size, color) => {
+    try {
+      const response = await deleteItemInCart(userId, productId, size, color);
+      console.log("Cart:", response);
+      
+      // Cập nhật danh sách cart items và tổng giá sau khi xoá
+      const updatedCart = await getCart(userId);
+      setCartItems(updatedCart.items);
+      setTotalPrice(updatedCart.totalPrice);
+    } catch (error) {
+      console.error("Error deleting item:", error);
+    }
+  };
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -57,33 +72,41 @@ const CartScreen = () => {
         data={cartItems}
         keyExtractor={(item, index) => index.toString()} // Sử dụng index vì không có _id ở cấp độ item
         renderItem={({ item }) => (
-            <View style={styles.itemContainer}>
-              <View style={styles.row}>
-                <Image source={{ uri: item.product.image }} style={styles.itemImage} />
-                <View style={styles.itemDetails}>
-                  <Text style={styles.itemName}>{item.product.name}</Text>
-                  <Text style={styles.itemColor}>Color: {item.color.colorName}</Text>
-                  <Text style={styles.itemSize}>Size: {item.size.size}</Text>
-                </View>
-              </View>
-              
-              <View style={styles.column}>
-                <View style={styles.quantityContainer}>
-                  <Text style={styles.quantityButton}>-</Text>
-                  <Text style={styles.quantity}>{item.quantity}</Text>
-                  <Text style={styles.quantityButton}>+</Text>
-                </View>
-              </View>
-          
-              <View style={styles.column}>
-                <Text style={styles.price}>${item.price.toFixed(2)}</Text>
-              </View>
-          
-              <View style={styles.column}>
-                <Text style={styles.totalPrice}>${(item.price * item.quantity).toFixed(2)}</Text>
+          <View style={styles.itemContainer}>
+            <View style={styles.row}>
+              <Image source={{ uri: item.product.image }} style={styles.itemImage} />
+              <View style={styles.itemDetails}>
+                <Text style={styles.itemName}>{item.product.name}</Text>
+                <Text style={styles.itemColor}>Color: {item.color.colorName}</Text>
+                <Text style={styles.itemSize}>Size: {item.size.size}</Text>
               </View>
             </View>
-          )}
+            
+            <View style={styles.column}>
+              <View style={styles.quantityContainer}>
+                <Text style={styles.quantityButton}>-</Text>
+                <Text style={styles.quantity}>{item.quantity}</Text>
+                <Text style={styles.quantityButton}>+</Text>
+              </View>
+            </View>
+        
+            <View style={styles.column}>
+              <Text style={styles.price}>${item.price.toFixed(2)}</Text>
+            </View>
+        
+            <View style={styles.column}>
+              <Text style={styles.totalPrice}>${(item.price * item.quantity).toFixed(2)}</Text>
+            </View>
+
+            {/* Nút xoá sản phẩm */}
+            <TouchableOpacity
+              onPress={() => handleDeleteItem(item.product._id, item.size._id, item.color._id)}
+              style={styles.deleteButton}
+            >
+              <Icon name="delete" size={24} color="red" />
+            </TouchableOpacity>
+          </View>
+        )}
       />
       <Text style={styles.totalPrice}>Total Price: ${totalPrice.toFixed(2)}</Text>
     </View>
@@ -97,7 +120,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   column: {
-    flex: 1, // Đảm bảo mỗi cột chiếm không gian bằng nhau
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -124,10 +147,10 @@ const styles = StyleSheet.create({
   },
   itemContainer: {
     flexDirection: "row",
-  alignItems: "center",
-  borderBottomWidth: 1,
-  borderBottomColor: "#ccc",
-  paddingVertical: 10,
+    alignItems: "center",
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+    paddingVertical: 10,
   },
   itemImage: {
     width: 80,
@@ -164,9 +187,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     paddingHorizontal: 10,
   },
-  priceContainer: {
-    alignItems: "flex-end",
-  },
   price: {
     fontSize: 16,
     fontWeight: "bold",
@@ -176,6 +196,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     textAlign: "right",
+  },
+  deleteButton: {
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+    alignItems: "center",
   },
 });
 

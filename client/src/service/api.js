@@ -10,6 +10,24 @@ export const loginUser = async (email, password) => {
         throw error;
     }
 }
+export const createUser = async ({ name, password, email }) => {
+    try {
+        const response = await axios.post(`${BASE_URL}/user/api/register`, { name, password, email });
+        console.log("Kết quả đăng ký: ", response.data);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+export const updateProfile = async (id, name, address, phone) => {
+    try {
+        const response = await axios.patch(`${BASE_URL}/user/api/updateProfile/${id}`, { name, address, phone });
+        console.log("Kết quả cập nhật: ", response.data);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
 export const getProducts = async () => {
     try {
         const response = await axios.get(`${BASE_URL}/product/api/list-all`);
@@ -46,12 +64,12 @@ export const getCart = async (userId) => {
         throw error;
     }
 }
-export const deleteItemInCart = async (userId, productId) => {
+export const deleteItemInCart = async (userId, productId, size, color) => {
     try {
-        const response = await axios.delete(`${BASE_URL}/cart/api/delete-item/${userId}`, { productId });
+        const response = await axios.delete(`${BASE_URL}/cart/api/delete-item/${userId}?productId=${productId}&size=${size}&color=${color}`);
         console.log("Cart: " + response.data);
         return response.data;
     } catch (error) {
         throw error;        
     }
-}
+};
