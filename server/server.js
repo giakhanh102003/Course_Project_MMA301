@@ -9,6 +9,7 @@ const userRouter = require("./routes/user.route");
 const categoryRouter = require("./routes/category.route");
 const productRouter = require("./routes/product.route");
 const cartRouter = require("./routes/cart.route");
+const orderRouter = require("./routes/order.route");
 require("dotenv").config();
 
 // khoi tao web server bang express
@@ -27,7 +28,7 @@ app.use("/user", userRouter);
 app.use("/category", categoryRouter);
 app.use("/product", productRouter);
 app.use("/cart", cartRouter);
-
+app.use("/order", orderRouter);
 // them middleware xu ly loi tren : router , Controller , Model
 app.use(async (req, res, next) => {
   //   next(createError(404,'Không tìm thấy trang '));

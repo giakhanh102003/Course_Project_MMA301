@@ -1,10 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ActivityIndicator, FlatList, Image, TouchableOpacity } from "react-native";
-import { getCart, deleteItemInCart } from "../service/api"; // Import hàm getCart và deleteItemInCart từ dịch vụ API
+import {
+  View,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+  FlatList,
+  Image,
+  TouchableOpacity,
+} from "react-native";
+import { getCart, deleteItemInCart } from "../service/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Icon from "react-native-vector-icons/MaterialIcons"; // Sử dụng icon thư viện
-
-const CartScreen = () => {
+import Icon from "react-native-vector-icons/MaterialIcons";
+const CartScreen = ({ navigation }) => {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState(null);
@@ -45,7 +52,7 @@ const CartScreen = () => {
     try {
       const response = await deleteItemInCart(userId, productId, size, color);
       console.log("Cart:", response);
-      
+
       // Cập nhật danh sách cart items và tổng giá sau khi xoá
       const updatedCart = await getCart(userId);
       setCartItems(updatedCart.items);
@@ -67,21 +74,28 @@ const CartScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Your Cart</Text>
-      <Text style={styles.itemCount}>{cartItems.length} items in your cart.</Text>
+      <Text style={styles.itemCount}>
+        {cartItems.length} items in your cart.
+      </Text>
       <FlatList
         data={cartItems}
         keyExtractor={(item, index) => index.toString()} // Sử dụng index vì không có _id ở cấp độ item
         renderItem={({ item }) => (
           <View style={styles.itemContainer}>
             <View style={styles.row}>
-              <Image source={{ uri: item.product.image }} style={styles.itemImage} />
+              <Image
+                source={{ uri: item.product.image }}
+                style={styles.itemImage}
+              />
               <View style={styles.itemDetails}>
                 <Text style={styles.itemName}>{item.product.name}</Text>
-                <Text style={styles.itemColor}>Color: {item.color.colorName}</Text>
+                <Text style={styles.itemColor}>
+                  Color: {item.color.colorName}
+                </Text>
                 <Text style={styles.itemSize}>Size: {item.size.size}</Text>
               </View>
             </View>
-            
+
             <View style={styles.column}>
               <View style={styles.quantityContainer}>
                 <Text style={styles.quantityButton}>-</Text>
@@ -89,18 +103,25 @@ const CartScreen = () => {
                 <Text style={styles.quantityButton}>+</Text>
               </View>
             </View>
-        
+
             <View style={styles.column}>
               <Text style={styles.price}>${item.price.toFixed(2)}</Text>
             </View>
-        
+
             <View style={styles.column}>
-              <Text style={styles.totalPrice}>${(item.price * item.quantity).toFixed(2)}</Text>
+              <Text style={styles.totalPrice}>
+                ${(item.price * item.quantity).toFixed(2)}
+              </Text>
             </View>
 
-            {/* Nút xoá sản phẩm */}
             <TouchableOpacity
-              onPress={() => handleDeleteItem(item.product._id, item.size._id, item.color._id)}
+              onPress={() =>
+                handleDeleteItem(
+                  item.product._id,
+                  item.size._id,
+                  item.color._id
+                )
+              }
               style={styles.deleteButton}
             >
               <Icon name="delete" size={24} color="red" />
@@ -108,12 +129,28 @@ const CartScreen = () => {
           </View>
         )}
       />
-      <Text style={styles.totalPrice}>Total Price: ${totalPrice.toFixed(2)}</Text>
+      <View style={styles.checkoutContainer}>
+      <TouchableOpacity
+        style={styles.checkoutButton}
+        onPress={() => navigation.navigate("Checkout",{ cartItems, totalPrice })} // 
+      >
+        <Text style={styles.checkoutButtonText}>Proceed to Checkout</Text>
+      </TouchableOpacity>
+      <Text style={styles.totalPrice}>
+        Total Price: ${totalPrice.toFixed(2)}
+      </Text>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  checkoutContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 10,
+  },
   container: {
     flex: 1,
     padding: 20,
@@ -201,6 +238,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 10,
     alignItems: "center",
+  },
+  checkoutButton: {
+    backgroundColor: "#ffb74d",
+    padding: 15,
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 20,
+  },
+  checkoutButtonText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
   },
 });
 

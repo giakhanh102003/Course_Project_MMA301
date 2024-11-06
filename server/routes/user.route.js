@@ -17,4 +17,7 @@ userRouter.patch("/api/updateProfile/:id", async (req, res, next) => {
 userRouter.get("/api/users", async (req, res, next) => {
     UserController.getUsers(req, res, next);
 })
+userRouter.get("/api/getUser/:id", async (req, res, next) => {
+    UserController.getUser(req, res, next);
+})
 module.exports = userRouter
