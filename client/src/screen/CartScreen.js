@@ -8,7 +8,7 @@ import {
   Image,
   TouchableOpacity,
 } from "react-native";
-import { getCart, deleteItemInCart } from "../service/api";
+import { getCart, deleteItemInCart,updateQuantityInCart  } from "../service/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/MaterialIcons";
 const CartScreen = ({ navigation }) => {
@@ -61,7 +61,18 @@ const CartScreen = ({ navigation }) => {
       console.error("Error deleting item:", error);
     }
   };
-
+  const handleUpdateQuantity = async (productId, size, color, action) => {
+    try {
+      const updatedCart = await updateQuantityInCart(userId, productId, size, color, action);
+      
+      // Lấy lại thông tin giỏ hàng để cập nhật giao diện
+      const fetchedCart = await getCart(userId);
+      setCartItems(fetchedCart.items);
+      setTotalPrice(fetchedCart.totalPrice);
+    } catch (error) {
+      console.error("Error updating quantity:", error);
+    }
+  };
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -98,9 +109,31 @@ const CartScreen = ({ navigation }) => {
 
             <View style={styles.column}>
               <View style={styles.quantityContainer}>
-                <Text style={styles.quantityButton}>-</Text>
+                <TouchableOpacity
+                  onPress={() =>
+                    handleUpdateQuantity(
+                      item.product._id,
+                      item.size._id,
+                      item.color._id,
+                      "decrease"
+                    )
+                  }
+                >
+                  <Text style={styles.quantityButton}>-</Text>
+                </TouchableOpacity>
                 <Text style={styles.quantity}>{item.quantity}</Text>
-                <Text style={styles.quantityButton}>+</Text>
+                <TouchableOpacity
+                  onPress={() =>
+                    handleUpdateQuantity(
+                      item.product._id,
+                      item.size._id,
+                      item.color._id,
+                      "increase"
+                    )
+                  }
+                >
+                  <Text style={styles.quantityButton}>+</Text>
+                </TouchableOpacity>
               </View>
             </View>
 
@@ -130,15 +163,17 @@ const CartScreen = ({ navigation }) => {
         )}
       />
       <View style={styles.checkoutContainer}>
-      <TouchableOpacity
-        style={styles.checkoutButton}
-        onPress={() => navigation.navigate("Checkout",{ cartItems, totalPrice })} // 
-      >
-        <Text style={styles.checkoutButtonText}>Proceed to Checkout</Text>
-      </TouchableOpacity>
-      <Text style={styles.totalPrice}>
-        Total Price: ${totalPrice.toFixed(2)}
-      </Text>
+        <TouchableOpacity
+          style={styles.checkoutButton}
+          onPress={() =>
+            navigation.navigate("Checkout", { cartItems, totalPrice })
+          } //
+        >
+          <Text style={styles.checkoutButtonText}>Proceed to Checkout</Text>
+        </TouchableOpacity>
+        <Text style={styles.totalPrice}>
+          Total Price: ${totalPrice.toFixed(2)}
+        </Text>
       </View>
     </View>
   );

@@ -118,9 +118,56 @@ async function deleteItemInCart(req, res, next) {
       res.status(500).json({ message: error.message });
   }
 }
+async function changeQuantity(req, res, next) {
+  try {
+    const { userId } = req.params;
+    const { productId, size, color, action } = req.body;
+
+    // Tìm giỏ hàng của người dùng
+    const cart = await Cart.findOne({ user: userId });
+    if (!cart) {
+      return res.status(404).json({ message: "Cart not found" });
+    }
+
+    // Tìm sản phẩm trong giỏ hàng dựa trên productId, size và color
+    const existingItemIndex = cart.items.findIndex(
+      (item) =>
+        item.product.toString() === productId &&
+        item.size.toString() === size &&
+        item.color.toString() === color
+    );
+
+    if (existingItemIndex === -1) {
+      return res.status(404).json({ message: "Item not found in cart" });
+    }
+
+    const existingItem = cart.items[existingItemIndex];
+
+    // Thay đổi số lượng hoặc xóa sản phẩm
+    if (action === 'increase') {
+      existingItem.quantity += 1;
+    } else if (action === 'decrease') {
+      if (existingItem.quantity === 1) {
+        // Xóa sản phẩm khỏi giỏ hàng nếu số lượng là 1
+        cart.items.splice(existingItemIndex, 1);
+      } else {
+        // Giảm số lượng nếu số lượng lớn hơn 1
+        existingItem.quantity -= 1;
+      }
+    }
+
+    // Lưu thay đổi vào cơ sở dữ liệu
+    await cart.save();
+    res.status(200).json(cart);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
 const CartController = {
   addItemToCart,
   getCart,
-  deleteItemInCart
+  deleteItemInCart,
+  changeQuantity
 };
 module.exports = CartController;

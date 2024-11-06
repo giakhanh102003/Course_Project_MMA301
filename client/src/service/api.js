@@ -1,5 +1,5 @@
 import axios from "axios";
-const BASE_URL = "http://localhost:8000";
+const BASE_URL = "http://10.33.52.47:8000";
 
 export const loginUser = async (email, password) => {
   try {
@@ -94,6 +94,23 @@ export const getCart = async (userId) => {
     throw error;
   }
 };
+export const updateQuantityInCart = async (
+  userId,
+  productId,
+  size,
+  color,
+  action
+) => {
+  try {
+    const response = await axios.patch(`${BASE_URL}/cart/api/update-quantity-item/${userId}`,
+      { productId, size, color,action }
+    );
+    console.log("Cart: " + response.data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
 export const deleteItemInCart = async (userId, productId, size, color) => {
   try {
     const response = await axios.delete(
@@ -117,3 +134,4 @@ export const createOrder = async (userId, address, phone) => {
     throw error;
   }
 };
+

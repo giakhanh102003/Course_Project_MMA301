@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-nativ
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { updateProfile } from "../service/api";
 import { Ionicons } from '@expo/vector-icons';
-import Toast from 'react-native-toast-message'; // Thêm thư viện Toast
+import Toast from 'react-native-toast-message'; 
 
 const UpdateProfile = ({ navigation }) => {
   const [name, setName] = useState('');
@@ -117,7 +117,6 @@ const UpdateProfile = ({ navigation }) => {
           <Text style={styles.updateButtonText}>Cập nhật</Text>
         </TouchableOpacity>
       </View>
-      <Toast ref={(ref) => Toast.setRef(ref)} /> {/* Thêm Toast vào đây */}
     </View>
   );
 };

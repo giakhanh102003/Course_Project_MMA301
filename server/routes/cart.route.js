@@ -12,4 +12,7 @@ cartRouter.get("/api/getCart/:userId", async (req, res, next) => {
 cartRouter.delete("/api/delete-item/:userId", async (req, res, next) => {
     CartController.deleteItemInCart(req, res, next);
 })
+cartRouter.patch("/api/update-quantity-item/:userId", async (req, res, next) => {
+    CartController.changeQuantity(req, res, next);
+})
 module.exports = cartRouter;

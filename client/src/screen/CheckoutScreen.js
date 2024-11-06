@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, TextInput, Alert, ScrollView } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getUser,createOrder } from "../service/api";
-
+import Toast from 'react-native-toast-message';
 const CheckoutScreen = ({ route, navigation }) => {
   const { cartItems, totalPrice } = route.params;
   const [userId, setUserId] = useState(null);

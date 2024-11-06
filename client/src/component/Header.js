@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f97316", // Màu nền của header
   },
   searchContainer: {
-    width: 200, // Chiều rộng cho TextInput
+    width: 100, // Chiều rộng cho TextInput
     flexDirection: "row",
     alignItems: "center",
   },
